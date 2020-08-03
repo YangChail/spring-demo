@@ -1,0 +1,33 @@
+#注册到eureka和配置中心的IP与端口
+remote:
+  #注册到eureka改为true，否则为false
+  register: false
+  #eureka服务IP
+  ip: 127.0.0.1
+  #eureka服务端口
+  port: 9543
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://${remote.ip}:${remote.port}/eureka/
+    instance:
+      prefer-ip-address: true
+    # 启动服务注册与否,单独部署时候设置为false
+    register-with-eureka: ${remote.register}
+    # 实例是否在eureka服务器上注册,单独部署时候设置为false
+    fetch-registry: ${remote.register}
+
+spring:
+  cloud:
+    config:
+      name: dm-increment
+      uri: http://${remote.ip}:${remote.port}/config
+      # 如果使本地配置优先级高于远程配置，则下面三个参数分别设置为:true、true、false
+      allowOverride: false
+      overrideNone: false
+      overrideSystemProperties: true
+      # 实例是否在eureka服务器上注册,单独部署时候设置为false
+      enabled: ${remote.register}
+logging:
+  register-shutdown-hook:
